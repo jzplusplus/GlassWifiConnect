@@ -1,0 +1,11 @@
+WIFI:S:GTwifi;U:username;P:password;E:PEAP;PH:MS-CHAPv2;;
+
+S - ssid
+U - username
+P - password
+E - EAP
+PH - phase2 authentication
+A - anonymous identity
+CC - client certificate
+PK - private key
+CA - CA certificate
