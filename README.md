@@ -6,7 +6,7 @@ An app to make Google Glass connect to a WPA Enterprise network.
 
 ##The short version
 
-1. Install GlassWifiConnect.apk onto Glass.
+1. Install GlassWifiConnect.apk ([available here](https://github.com/jzplusplus/GlassWifiConnect/raw/master/bin/GlassWifiConnect.apk)) onto Glass
 2. Generate a QR code using the following string, substituting the correct info for your WiFi network:  
     * WIFI:S:ssid;U:username;P:password;E:PEAP;PH:MS-CHAPv2;;
 3. Scan the QR code with the app. Glass should connect in a few seconds and you're done!
