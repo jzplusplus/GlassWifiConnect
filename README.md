@@ -3,6 +3,9 @@ GlassWifiConnect
 
 An app to make Google Glass connect to a WPA Enterprise network.
 
+WARNING: This method of connecting to an enterprise network does not require a valid certificate while connecting
+and may make your username and password vulnerable to interception
+
 
 ##The short version
 
