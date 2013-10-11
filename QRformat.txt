@@ -1,11 +1,15 @@
-WIFI:S:GTwifi;U:username;P:password;E:PEAP;PH:MS-CHAPv2;;
+Use the following string and go to goqr.me (or any other QR code generator) to make a QR code for this app to scan.
+
+WIFI:S:ssid;U:username;P:password;E:PEAP;PH:MS-CHAPv2;;
 
 S - ssid
 U - username
 P - password
-E - EAP
+E - EAP method
 PH - phase2 authentication
 A - anonymous identity
 CC - client certificate
 PK - private key
 CA - CA certificate
+
+Note: QR code generators online may or may not send this string (containing your password) in cleartext to their servers.
