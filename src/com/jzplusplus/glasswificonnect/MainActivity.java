@@ -46,12 +46,10 @@ public class MainActivity extends Activity
     private CameraPreview mPreview;
     private Handler autoFocusHandler;
 
-    TextView scanText;
     Button scanButton;
 
     ImageScanner scanner;
 
-    private boolean barcodeScanned = false;
     private boolean previewing = true;
 
     static {
@@ -77,34 +75,12 @@ public class MainActivity extends Activity
         mPreview = new CameraPreview(this, mCamera, previewCb, autoFocusCB);
         FrameLayout preview = (FrameLayout)findViewById(R.id.cameraPreview);
         preview.addView(mPreview);
-
-        scanText = (TextView)findViewById(R.id.scanText);
-
-//        scanButton = (Button)findViewById(R.id.ScanButton);
-//
-//        scanButton.setOnClickListener(new OnClickListener() {
-//                public void onClick(View v) {
-//                    restartScanning();
-//                }
-//            });
     }
 
     public void onPause() {
         super.onPause();
         releaseCamera();
     }
-    
-//    public void restartScanning()
-//    {
-//    	if (barcodeScanned) {
-//            barcodeScanned = false;
-//            scanText.setText("Scanning...");
-//            mCamera.setPreviewCallback(previewCb);
-//            mCamera.startPreview();
-//            previewing = true;
-//            mCamera.autoFocus(autoFocusCB);
-//        }
-//    }
 
     /** A safe way to get an instance of the Camera object. */
     public static Camera getCameraInstance(){
@@ -151,9 +127,7 @@ public class MainActivity extends Activity
                     SymbolSet syms = scanner.getResults();
                     for (Symbol sym : syms) {
                     	String text = sym.getData();
-                        scanText.setText(text);
                         parseWifiInfo(text);
-                        barcodeScanned = true;
                         break;
                     }
                 }

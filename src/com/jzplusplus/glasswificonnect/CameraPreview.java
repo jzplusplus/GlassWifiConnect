@@ -6,6 +6,7 @@
 package com.jzplusplus.glasswificonnect;
 
 import java.io.IOException;
+import java.util.List;
 
 import android.util.Log;
 import android.view.SurfaceView;
@@ -31,7 +32,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         mCamera = camera;
         previewCallback = previewCb;
         autoFocusCallback = autoFocusCb;
-
+        
         /* 
          * Set camera to continuous focus if supported, otherwise use
          * software auto-focus. Only works for API level >=9.
@@ -89,9 +90,15 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         try {
             // Hard code camera surface rotation 90 degs to match Activity view in portrait
             //mCamera.setDisplayOrientation(90);
-
+        	
             mCamera.setPreviewDisplay(mHolder);
             mCamera.setPreviewCallback(previewCallback);
+            
+            Camera.Parameters cameraParameters = mCamera.getParameters();
+            cameraParameters.setPreviewSize(width, height);
+
+            mCamera.setParameters(cameraParameters);
+            
             mCamera.startPreview();
             mCamera.autoFocus(autoFocusCallback);
         } catch (Exception e){
