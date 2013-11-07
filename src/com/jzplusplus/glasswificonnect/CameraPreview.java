@@ -87,17 +87,14 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
           // ignore: tried to stop a non-existent preview
         }
 
-        try {
-            // Hard code camera surface rotation 90 degs to match Activity view in portrait
-            //mCamera.setDisplayOrientation(90);
-        	
+        try 
+        {
             mCamera.setPreviewDisplay(mHolder);
             mCamera.setPreviewCallback(previewCallback);
             
-            Camera.Parameters cameraParameters = mCamera.getParameters();
-            cameraParameters.setPreviewSize(width, height);
-
-            mCamera.setParameters(cameraParameters);
+            Camera.Parameters parameters = mCamera.getParameters();  
+            parameters.setPreviewSize(640, 480);
+            mCamera.setParameters(parameters);
             
             mCamera.startPreview();
             mCamera.autoFocus(autoFocusCallback);
