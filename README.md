@@ -23,8 +23,7 @@ To use this app, you can either build from source using Android Developer Tools 
 bin folder. You can load it onto your Glass in ADT or using the ADB tool. You need to have one of these in order to get
 the app onto Glass currently.
 
-If you have [Launchy](https://github.com/kaze0/launchy) (I recommend it) you can run the app from there. If not, you'll
-need to trigger the app to run by reloading the APK onto the device.
+You can run the app by saying "ok glass, add wifi network".
 
 Then, make your QR code format string. The details on this can be found in QRformat.txt, but it should look like this:  
 * WIFI:S:ssid;U:username;P:password;E:PEAP;PH:MS-CHAPv2;;
