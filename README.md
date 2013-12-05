@@ -12,7 +12,7 @@ and may make your username and password vulnerable to interception
 1. Install GlassWifiConnect.apk ([available here](https://github.com/jzplusplus/GlassWifiConnect/raw/master/bin/GlassWifiConnect.apk)) onto Glass
 2. Generate a QR code using the following string, substituting the correct info for your WiFi network:  
     * WIFI:S:ssid;U:username;P:password;E:PEAP;PH:MS-CHAPv2;;
-3. Scan the QR code with the app. Glass should connect in a few seconds and you're done!
+3. Say "ok, glass add wifi network" to run the app and scan the QR code. Glass should connect in a few seconds and you're done!
 
 
 ##The long version
@@ -34,5 +34,5 @@ doesn't require one or multiple fields, you should simply leave them out of the 
 
 NOTE: Be aware that online QR code generators may or may not send the text (containing your password) in the clear to their servers.
     
-Now run the app on Glass and scan the generated QR code. You should see a "Connecting to..." message, followed shortly by
+Now say "ok, glass add wifi network" to run the app on Glass and scan the generated QR code. You should see a "Connecting to..." message, followed shortly by
 a "Connected!" message if everything worked properly.
