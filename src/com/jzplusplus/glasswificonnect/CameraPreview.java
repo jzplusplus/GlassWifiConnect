@@ -20,6 +20,8 @@ import android.hardware.Camera.AutoFocusCallback;
 
 /** A basic Camera preview class */
 public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
+	final static String TAG = "GlassWifiConnect";
+
     private SurfaceHolder mHolder;
     private Camera mCamera;
     private PreviewCallback previewCallback;

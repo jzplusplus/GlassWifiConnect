@@ -65,7 +65,27 @@ public class MainActivity extends Activity
         //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         autoFocusHandler = new Handler();
-        mCamera = getCameraInstance();
+        
+        //For some reason, right after launching from the "ok, glass" menu the camera is locked
+        //Try 3 times to grab the camera, with a short delay in between.
+        for(int i=0; i < 3; i++)
+        {
+	        mCamera = getCameraInstance();
+	        if(mCamera != null) break;
+	        
+	        //Toast.makeText(this, "Couldn't lock camera, trying again in 1 second", Toast.LENGTH_SHORT).show();
+	        try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        }
+        if(mCamera == null)
+        {
+        	Toast.makeText(this, "Camera cannot be locked", Toast.LENGTH_SHORT).show();
+        	finish();
+        }
 
         /* Instance barcode scanner */
         scanner = new ImageScanner();
@@ -87,6 +107,7 @@ public class MainActivity extends Activity
         Camera c = null;
         try {
             c = Camera.open();
+            Log.d(TAG, "getCamera = " + c);
         } catch (Exception e){
         	Log.d(TAG, e.toString());
         }
@@ -156,7 +177,9 @@ public class MainActivity extends Activity
     	
     	text = text.substring("WIFI:".length(), text.length()-2);
     	
-    	String[] params = text.split(";");
+    	//This split method leads to some weird edge cases, but I want to support semicolons in fields
+    	//without breaking backwards compatibility
+    	String[] params = text.split(";(?=S:|T:|U:|P:|E:|PH:|A:|CC:|PK:|CA:)");
     	
     	for(String s: params)
     	{
@@ -203,7 +226,7 @@ public class MainActivity extends Activity
     		}
     	}
     	
-    	Toast t = Toast.makeText(getApplicationContext(), "Connecting to " + ssid + "...", Toast.LENGTH_LONG);
+    	Toast t = Toast.makeText(getApplicationContext(), "Adding network '" + ssid + "'...", Toast.LENGTH_SHORT);
     	t.show();
     	
     	saveEapConfig(ssid, username, password, EAP, phase2, anon, clientCert, privKey, caCert);
@@ -444,7 +467,7 @@ public class MainActivity extends Activity
 	    	return false;
 	    }
 	    
-	    Toast t = Toast.makeText(getApplicationContext(), "Connected!", Toast.LENGTH_SHORT);
+	    Toast t = Toast.makeText(getApplicationContext(), "Network added", Toast.LENGTH_SHORT);
 	    t.show();
 	    return true;
 	}
