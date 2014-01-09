@@ -29,7 +29,6 @@ import android.hardware.Camera.PreviewCallback;
 import android.hardware.Camera.AutoFocusCallback;
 import android.hardware.Camera.Size;
 
-import android.widget.TextView;
 
 /* Import ZBar Class files */
 import net.sourceforge.zbar.ImageScanner;
