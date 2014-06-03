@@ -1,4 +1,4 @@
-GlassWifiConnect (Not yet working with XE16!)
+GlassWifiConnect (Updated to support XE 17.2)
 ================
 
 An app to make Google Glass connect to a WPA Enterprise network.
@@ -17,7 +17,7 @@ and may make your username and password vulnerable to interception
 
 ##The long version
 This app is based off of the [ZBar example app](https://github.com/ZBar/ZBar) for QR code reading and
-[this StackOverflow response](http://stackoverflow.com/a/4375874/1792555) for connecting to the WiFi network.
+uses the Android wifi APIs to add the network.
 
 To use this app, you can either build from source using Android Developer Tools or just use the precompiled APK in the
 bin folder. You can load it onto your Glass in ADT or using the ADB tool. You need to have one of these in order to get
