@@ -5,9 +5,6 @@
 
 package com.jzplusplus.glasswificonnect;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiConfiguration.KeyMgmt;
 import android.net.wifi.WifiEnterpriseConfig;
@@ -63,7 +60,6 @@ public class MainActivity extends Activity
         setContentView(R.layout.activity_main);
 
         this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         autoFocusHandler = new Handler();
         
@@ -74,13 +70,9 @@ public class MainActivity extends Activity
 	        mCamera = getCameraInstance();
 	        if(mCamera != null) break;
 	        
-	        //Toast.makeText(this, "Couldn't lock camera, trying again in 1 second", Toast.LENGTH_SHORT).show();
-	        try {
-				Thread.sleep(500);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+	        Log.d(TAG, "Couldn't lock camera, will try " + (2-i) + " more times...");
+	        
+	        try { Thread.sleep(500); } catch (InterruptedException e) { e.printStackTrace(); }
         }
         if(mCamera == null)
         {
@@ -166,15 +158,11 @@ public class MainActivity extends Activity
     	}
     	
     	String ssid = null;
-    	String type = null;
     	String username = null;
     	String password = null;
     	String EAP = null;
     	String phase2 = null;
     	String anon = null;
-    	String clientCert = null;
-    	String privKey = null;
-    	String caCert = null;
     	
     	text = text.substring("WIFI:".length(), text.length()-2);
     	
@@ -188,10 +176,6 @@ public class MainActivity extends Activity
     		if(keyval[0].equals("S"))
     		{
     			ssid = keyval[1];
-    		}
-    		else if(keyval[0].equals("T"))
-    		{
-    			type = keyval[1];
     		}
     		else if(keyval[0].equals("U"))
     		{
@@ -213,24 +197,12 @@ public class MainActivity extends Activity
     		{
     			anon = keyval[1];
     		}
-    		else if(keyval[0].equals("CC"))
-    		{
-    			clientCert = keyval[1];
-    		}
-    		else if(keyval[0].equals("PK"))
-    		{
-    			privKey = keyval[1];
-    		}
-    		else if(keyval[0].equals("CA"))
-    		{
-    			caCert = keyval[1];
-    		}
     	}
     	
     	Toast t = Toast.makeText(getApplicationContext(), "Adding network '" + ssid + "'...", Toast.LENGTH_SHORT);
     	t.show();
     	
-    	saveEapConfig(ssid, username, password, EAP, phase2, anon, clientCert, privKey, caCert);
+    	saveEapConfig(ssid, username, password, EAP, phase2, anon);
     	
     	finish();
     }
@@ -242,54 +214,27 @@ public class MainActivity extends Activity
             }
         };
         
-    boolean saveEapConfig(String ssid, String userName, String passString, String EAP, String phase2, String anon,
-    					String clientCert, String privKey, String caCert)
+    boolean saveEapConfig(String ssid, String userName, String passString, String EAP, String phase2, String anon)
     {
 	    /********************************Configuration Strings****************************************************/
 	    final String ENTERPRISE_EAP = EAP;
-    	final String ENTERPRISE_CLIENT_CERT = clientCert;
-    	final String ENTERPRISE_PRIV_KEY = privKey;
-	    //CertificateName = Name given to the certificate while installing it
-	
-	    /*Optional Params- My wireless Doesn't use these*/
 	    final String ENTERPRISE_PHASE2 = phase2;
 	    final String ENTERPRISE_ANON_IDENT = anon;
-	    final String ENTERPRISE_CA_CERT = caCert;
-	    /********************************Configuration Strings****************************************************/
-	
-//	    final String INT_PRIVATE_KEY = "private_key";
-//	    final String INT_PHASE2 = "phase2";
-//	    final String INT_PASSWORD = "password";
-//	    final String INT_IDENTITY = "identity";
-//	    final String INT_EAP = "eap";
-//	    final String INT_CLIENT_CERT = "client_cert";
-//	    final String INT_CA_CERT = "ca_cert";
-//	    final String INT_ANONYMOUS_IDENTITY = "anonymous_identity";
-//	    final String INT_ENTERPRISEFIELD_NAME = "android.net.wifi.WifiConfiguration$EnterpriseField";
 	    
 	    /*Create a WifiConfig*/
 	    WifiConfiguration selectedConfig = new WifiConfiguration();
-	    WifiEnterpriseConfig wec = new WifiEnterpriseConfig();
-	
-	    /*AP Name*/
-	    selectedConfig.SSID = "\""+ssid+"\"";
 	    
+	    selectedConfig.SSID = "\""+ssid+"\"";
 	    selectedConfig.status = WifiConfiguration.Status.ENABLED;
-	
-	    /*Priority*/
-	    selectedConfig.priority = 40;
-	
-	    /*Enable Hidden SSID*/
-	    selectedConfig.hiddenSSID = true;
 	    
 	    selectedConfig.allowedKeyManagement.set(KeyMgmt.IEEE8021X);
-	    //selectedConfig.preSharedKey = "\"".concat(passString).concat("\"");
+	    selectedConfig.allowedKeyManagement.set(KeyMgmt.WPA_EAP);
 	
 	    // Enterprise Settings
+	    selectedConfig.enterpriseConfig.setIdentity(userName);
+	    selectedConfig.enterpriseConfig.setPassword(passString);
+	    selectedConfig.enterpriseConfig.setAnonymousIdentity(ENTERPRISE_ANON_IDENT);
 	    
-	    wec.setAnonymousIdentity(ENTERPRISE_ANON_IDENT);
-	    //wec.setCaCertificate(cert);
-	    //wec.setClientKeyEntry(privateKey, clientCertificate);
 	    int eap;
 	    if(ENTERPRISE_EAP == null)
 	    {
@@ -315,10 +260,7 @@ public class MainActivity extends Activity
 	    {
 	    	eap = WifiEnterpriseConfig.Eap.NONE;
 	    }
-	    wec.setEapMethod(eap);
-	    
-	    wec.setIdentity(userName);
-	    wec.setPassword(passString);
+	    selectedConfig.enterpriseConfig.setEapMethod(eap);
 	    
 	    int phase2Method;
 	    if(ENTERPRISE_PHASE2 == null)
@@ -345,160 +287,7 @@ public class MainActivity extends Activity
 	    {
 	    	phase2Method = WifiEnterpriseConfig.Phase2.NONE;
 	    }
-	    wec.setPhase2Method(phase2Method);
-	    
-	    //wec.setSubjectMatch(subjectMatch)
-	    
-	    selectedConfig.enterpriseConfig = wec;
-	    
-	    
-	    // Reflection magic here too, need access to non-public APIs
-//	    try {
-//	        // Let the magic start
-//	        Class[] wcClasses = WifiConfiguration.class.getClasses();
-//	        // null for overzealous java compiler
-//	        Class wcEnterpriseField = null;
-//	
-//	        for (Class wcClass : wcClasses)
-//	            if (wcClass.getName().equals(INT_ENTERPRISEFIELD_NAME)) 
-//	            {
-//	                wcEnterpriseField = wcClass;
-//	                break;
-//	            }
-//	        boolean noEnterpriseFieldType = false; 
-//	        if(wcEnterpriseField == null)
-//	            noEnterpriseFieldType = true; // Cupcake/Donut access enterprise settings directly
-//	
-//	        Field wcefAnonymousId = null, wcefCaCert = null, wcefClientCert = null, wcefEap = null, wcefIdentity = null, wcefPassword = null, wcefPhase2 = null, wcefPrivateKey = null;
-//	        Field[] wcefFields = WifiConfiguration.class.getFields();
-//	        // Dispatching Field vars
-//	        for (Field wcefField : wcefFields) 
-//	        {
-//	            if (wcefField.getName().equals(INT_ANONYMOUS_IDENTITY))
-//	                wcefAnonymousId = wcefField;
-//	            else if (wcefField.getName().equals(INT_CA_CERT))
-//	                wcefCaCert = wcefField;
-//	            else if (wcefField.getName().equals(INT_CLIENT_CERT))
-//	                wcefClientCert = wcefField;
-//	            else if (wcefField.getName().equals(INT_EAP))
-//	                wcefEap = wcefField;
-//	            else if (wcefField.getName().equals(INT_IDENTITY))
-//	                wcefIdentity = wcefField;
-//	            else if (wcefField.getName().equals(INT_PASSWORD))
-//	                wcefPassword = wcefField;
-//	            else if (wcefField.getName().equals(INT_PHASE2))
-//	                wcefPhase2 = wcefField;
-//	            else if (wcefField.getName().equals(INT_PRIVATE_KEY))
-//	                wcefPrivateKey = wcefField;
-//	        }
-//	
-//	
-//	        Method wcefSetValue = null;
-//	        if(!noEnterpriseFieldType){
-//	        for(Method m: wcEnterpriseField.getMethods())
-//	            //System.out.println(m.getName());
-//	            if(m.getName().trim().equals("setValue"))
-//	                wcefSetValue = m;
-//	        }
-//	
-//	
-//	        /*EAP Method*/
-//	        if(!noEnterpriseFieldType)
-//	        {
-//	                wcefSetValue.invoke(wcefEap.get(selectedConfig), ENTERPRISE_EAP);
-//	        }
-//	        else
-//	        {
-//	                wcefEap.set(selectedConfig, ENTERPRISE_EAP);
-//	        }
-//	        /*EAP Phase 2 Authentication*/
-//	        if(!noEnterpriseFieldType)
-//	        {
-//	                wcefSetValue.invoke(wcefPhase2.get(selectedConfig), ENTERPRISE_PHASE2);
-//	        }
-//	        else
-//	        {
-//	              wcefPhase2.set(selectedConfig, ENTERPRISE_PHASE2);
-//	        }
-//	        /*EAP Anonymous Identity*/
-//	        if(!noEnterpriseFieldType)
-//	        {
-//	                wcefSetValue.invoke(wcefAnonymousId.get(selectedConfig), ENTERPRISE_ANON_IDENT);
-//	        }
-//	        else
-//	        {
-//	              wcefAnonymousId.set(selectedConfig, ENTERPRISE_ANON_IDENT);
-//	        }
-//	        /*EAP CA Certificate*/
-//	        if(!noEnterpriseFieldType)
-//	        {
-//	                wcefSetValue.invoke(wcefCaCert.get(selectedConfig), ENTERPRISE_CA_CERT);
-//	        }
-//	        else
-//	        {
-//	              wcefCaCert.set(selectedConfig, ENTERPRISE_CA_CERT);
-//	        }               
-//	        /*EAP Private key*/
-//	        if(!noEnterpriseFieldType)
-//	        {
-//	                wcefSetValue.invoke(wcefPrivateKey.get(selectedConfig), ENTERPRISE_PRIV_KEY);
-//	        }
-//	        else
-//	        {
-//	              wcefPrivateKey.set(selectedConfig, ENTERPRISE_PRIV_KEY);
-//	        }               
-//	        /*EAP Identity*/
-//	        if(!noEnterpriseFieldType)
-//	        {
-//	                wcefSetValue.invoke(wcefIdentity.get(selectedConfig), userName);
-//	        }
-//	        else
-//	        {
-//	              wcefIdentity.set(selectedConfig, userName);
-//	        }               
-//	        /*EAP Password*/
-//	        if(!noEnterpriseFieldType)
-//	        {
-//	                wcefSetValue.invoke(wcefPassword.get(selectedConfig), passString);
-//	        }
-//	        else
-//	        {
-//	              wcefPassword.set(selectedConfig, passString);
-//	        }               
-//	        /*EAp Client certificate*/
-//	        if(!noEnterpriseFieldType)
-//	        {
-//	            wcefSetValue.invoke(wcefClientCert.get(selectedConfig), ENTERPRISE_CLIENT_CERT);
-//	        }
-//	        else
-//	        {
-//	              wcefClientCert.set(selectedConfig, ENTERPRISE_CLIENT_CERT);
-//	        }               
-//	        // Adhoc for CM6
-//	        // if non-CM6 fails gracefully thanks to nested try-catch
-//	
-//	        try{
-//	        Field wcAdhoc = WifiConfiguration.class.getField("adhocSSID");
-//	        Field wcAdhocFreq = WifiConfiguration.class.getField("frequency");
-//	        //wcAdhoc.setBoolean(selectedConfig, prefs.getBoolean(PREF_ADHOC,
-//	        //      false));
-//	        wcAdhoc.setBoolean(selectedConfig, false);
-//	        int freq = 2462;    // default to channel 11
-//	        //int freq = Integer.parseInt(prefs.getString(PREF_ADHOC_FREQUENCY,
-//	        //"2462"));     // default to channel 11
-//	        //System.err.println(freq);
-//	        wcAdhocFreq.setInt(selectedConfig, freq); 
-//	        } catch (Exception e)
-//	        {
-//	            e.printStackTrace();
-//	        }
-//	
-//	    } catch (Exception e)
-//	    {
-//	        e.printStackTrace();
-//	    }
-	
-	    //Log.d("WifiPreference", selectedConfig.toString());
+	    selectedConfig.enterpriseConfig.setPhase2Method(phase2Method);
 	    
 	    WifiManager wifiManag = (WifiManager) getSystemService(Context.WIFI_SERVICE);
 	    boolean res1 = wifiManag.setWifiEnabled(true);
@@ -508,15 +297,17 @@ public class MainActivity extends Activity
 	    Log.d("WifiPreference", "enableNetwork returned " + b );
 	    boolean c = wifiManag.saveConfiguration();
 	    Log.d("WifiPreference", "Save configuration returned " + c );
-//	    boolean d = wifiManag.enableNetwork(res, true);   
-//	    Log.d("WifiPreference", "enableNetwork returned " + d );
+	    boolean d = wifiManag.enableNetwork(res, true);   
+	    Log.d("WifiPreference", "enableNetwork returned " + d );
 	    
-	    if(!res1 || res == -1 || !b || !c)// || !d)
+	    if(!res1 || res == -1 || !b || !c || !d)
 	    {
 	    	Toast t = Toast.makeText(getApplicationContext(), "WiFi network connection failed", Toast.LENGTH_LONG);
 	    	t.show();
 	    	return false;
 	    }
+	    
+	    try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
 	    
 	    Toast t = Toast.makeText(getApplicationContext(), "Network added", Toast.LENGTH_SHORT);
 	    t.show();
