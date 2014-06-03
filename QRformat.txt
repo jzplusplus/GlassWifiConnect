@@ -8,8 +8,5 @@ P - password
 E - EAP method
 PH - phase2 authentication
 A - anonymous identity
-CC - client certificate
-PK - private key
-CA - CA certificate
 
 Note: QR code generators online may or may not send this string (containing your password) in cleartext to their servers.
