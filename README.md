@@ -1,4 +1,4 @@
-GlassWifiConnect (Updated to support XE 17.2)
+GlassWifiConnect
 ================
 
 An app to make Google Glass connect to a WPA Enterprise network.
